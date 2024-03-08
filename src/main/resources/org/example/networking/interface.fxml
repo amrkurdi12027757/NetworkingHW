@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.networking.AppController">
+    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0">
+        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
+            <Label text="TCP Port" />
+            <TextField fx:id="tcpPortField" maxWidth="100.0" prefWidth="200.0" />
+        </VBox>
+        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
+            <Label text="UDP PORT" />
+            <TextField fx:id="udpPortField" maxWidth="100.0" prefWidth="200.0" />
+        </VBox>
+        <VBox alignment="CENTER" maxWidth="250.0" prefHeight="200.0" prefWidth="100.0" spacing="20.0" HBox.hgrow="SOMETIMES">
+            <Label text="UPD broadcast gets ports automatically" VBox.vgrow="SOMETIMES" />
+            <TextField fx:id="udpBroadcastPortField" maxWidth="100.0" />
+        </VBox>
+    </HBox>
+    <HBox fx:id="container" alignment="BOTTOM_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" VBox.vgrow="ALWAYS">
+        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0" spacing="20.0">
+            <Label text="IP Address" />
+            <TextField fx:id="ipAddressField" maxWidth="200.0" prefWidth="200.0" />
+        </VBox>
+    </HBox>
+    <HBox alignment="TOP_CENTER" prefWidth="200.0" spacing="20.0">
+        <VBox fx:id="tcpBox" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="300.0" spacing="20.0">
+            <Label text="TCP" />
+            <TextArea fx:id="tcpTextArea" maxWidth="250.0" prefHeight="200.0">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </TextArea>
+        </VBox>
+        <VBox fx:id="udpBox" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="300.0" spacing="20.0">
+            <Label text="UDP" />
+            <TextArea fx:id="udpTextArea" maxWidth="250.0" prefHeight="200.0">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </TextArea>
+        </VBox>
+    </HBox>
+   <padding>
+      <Insets top="50.0" />
+   </padding>
+</VBox>
