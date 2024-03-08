@@ -29,8 +29,8 @@ public class Clients {
   private final VBox udpBox;
   private final Button sendTcp;
   private final Button sendUdp;
-  private int lastTcpTextLength;
-  private int lastUdpTextLength;
+  private final StringBuilder lastTcpText;
+  private final StringBuilder lastUdpText;
   private Socket tcpSocket;
   private DatagramSocket udpSocket;
 
@@ -38,7 +38,7 @@ public class Clients {
    * @author Amr
    * This class represents the clients of the UDP and TCP servers at the same time it receives the port numbers
    * from the UDP Broadcast Server and open the TCP and UDP sockets on those port numbers
-   * */
+   */
   public Clients(TextField tcpPortField,
                  TextField udpPortField,
                  TextField udpBroadcastPortField,
@@ -59,12 +59,14 @@ public class Clients {
     this.container = container;
     this.tcpBox = tcpBox;
     this.udpBox = udpBox;
+    lastTcpText = new StringBuilder();
+    lastUdpText = new StringBuilder();
 
     tcpTextArea.setEditable(false);
     udpTextArea.setEditable(false);
 
-    tcpTextArea.textProperty().addListener(new TextListener(tcpTextArea, new int[]{lastTcpTextLength}));
-    udpTextArea.textProperty().addListener(new TextListener(udpTextArea, new int[]{lastUdpTextLength}));
+    tcpTextArea.textProperty().addListener(new TextListener(tcpTextArea, lastTcpText));
+    udpTextArea.textProperty().addListener(new TextListener(udpTextArea, lastUdpText));
 
     button.onMouseClickedProperty().set(event -> {
       if (button.getText().equals("Connect"))
@@ -138,10 +140,10 @@ public class Clients {
   private void sendUdp() {
     try {
       udpTextArea.appendText("\n");
-      byte[] sendData = udpTextArea.getText().substring(lastUdpTextLength).getBytes();
+      byte[] sendData = udpTextArea.getText().substring(lastUdpText.length()).getBytes();
       DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(ipAddressField.getText()), Integer.parseInt(udpPortField.getText().strip()));
       udpSocket.send(sendPacket);
-      lastUdpTextLength = udpTextArea.getText().length();
+      lastUdpText.append(udpTextArea.getText().substring(lastUdpText.length()));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -153,8 +155,8 @@ public class Clients {
   private void sendTcp() {
     try {
       tcpTextArea.appendText("\n");
-      tcpSocket.getOutputStream().write((tcpTextArea.getText().substring(lastTcpTextLength)).getBytes());
-      lastTcpTextLength = tcpTextArea.getText().length();
+      tcpSocket.getOutputStream().write((tcpTextArea.getText().substring(lastTcpText.length())).getBytes());
+      lastTcpText.append(tcpTextArea.getText().substring(lastTcpText.length()));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -201,7 +203,7 @@ public class Clients {
       InetAddress IPAddress = InetAddress.getByName(ipAddressField.getText().strip());
       udpSocket.setReuseAddress(true);
 
-      byte[] sendData = udpTextArea.getText().substring(lastUdpTextLength).getBytes();
+      byte[] sendData = udpTextArea.getText().substring(lastUdpText.length()).getBytes();
       //Sending UDP packets to Server UDP Listening Port
       DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, Integer.parseInt(udpBroadcastPortField.getText().strip()));
       udpSocket.send(sendPacket);
@@ -219,7 +221,7 @@ public class Clients {
           String message = new String(receivePacket.getData(), 0, receivePacket.getLength());
           Platform.runLater(() -> {
             udpTextArea.appendText("\nServer:\n" + message + "\n");
-            lastUdpTextLength = udpTextArea.getText().length();
+            lastUdpText.append("\nServer:\n").append(message).append("\n");
           });
         } catch (IOException e) {
           throw new RuntimeException(e);
@@ -241,7 +243,7 @@ public class Clients {
             final String finalMessage = message.toString();
             Platform.runLater(() -> {
               tcpTextArea.appendText("\nServer:\n" + finalMessage + "\n");
-              lastTcpTextLength = tcpTextArea.getText().length();
+              lastTcpText.append("\nServer:\n").append(finalMessage).append("\n");
             });
             message = new StringBuilder();
           } else
@@ -276,10 +278,10 @@ public class Clients {
    */
   private static class TextListener implements ChangeListener<String> {
     private final TextArea textArea;
-    private final int[] lastTextLength = new int[1];
+    private final StringBuilder lastText;
 
-    public TextListener(TextArea textArea, int[] lastTextLength) {
-      this.lastTextLength[0] = lastTextLength[0];
+    public TextListener(TextArea textArea, final StringBuilder lastText) {
+      this.lastText = lastText;
       this.textArea = textArea;
     }
 
@@ -288,7 +290,7 @@ public class Clients {
       textArea.textProperty().removeListener(this);
 
       try {
-        if (newValue.length() < lastTextLength[0] || !newValue.startsWith(oldValue)) {
+        if (newValue.length() < lastText.length() || !newValue.startsWith(lastText.toString())) {
           textArea.setText(oldValue);
         }
       } finally {
